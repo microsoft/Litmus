@@ -1,0 +1,9 @@
+pandas
+xlrd
+numpy
+scipy
+sklearn
+xgboost==1.4.2
+matplotlib
+seaborn
+tqdm

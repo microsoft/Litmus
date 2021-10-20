@@ -1,0 +1,383 @@
+<!-- From https://github.com/StartBootstrap/startbootstrap-bare (MIT License) -->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>LITMUS Predictor</title>
+
+    <!-- Bootstrap core CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
+    <link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
+
+    <style type="text/css">
+        .dot {
+            height: 1em;
+            width: 1em;
+            border-radius: 50%;
+            display: inline-block;
+        }
+
+        .tooltip {
+            pointer-events: none;
+        }
+
+        button {
+            pointer-events: auto;
+        }
+
+        #suggestions_inp {
+            display: none;
+        }
+
+        .btn {
+            font-size: 16px; /* Set a font size */
+            cursor: pointer; /* Mouse pointer on hover */
+        }
+
+        hr {
+            margin-top: 1rem;
+            margin-bottom: 1rem;
+            border: 0;
+            border-top: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+
+
+        .modal {
+            max-width: 120%;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark static-top">
+        <div class="container">
+            <img alt="Microsoft" src="data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4KPCEtLSBHZW5lcmF0b3I6IEFkb2JlIElsbHVzdHJhdG9yIDI0LjAuMywgU1ZHIEV4cG9ydCBQbHVnLUluIC4gU1ZHIFZlcnNpb246IDYuMDAgQnVpbGQgMCkgIC0tPgo8c3ZnIHZlcnNpb249IjEuMSIgaWQ9Ik1TLXN5bWJvbCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayIgeD0iMHB4IiB5PSIwcHgiCgkgdmlld0JveD0iMCAwIDMzNy42IDcyIiBzdHlsZT0iZW5hYmxlLWJhY2tncm91bmQ6bmV3IDAgMCAzMzcuNiA3MjsiIHhtbDpzcGFjZT0icHJlc2VydmUiPgo8c3R5bGUgdHlwZT0idGV4dC9jc3MiPgoJLnN0MHtmaWxsOiNGRkZGRkY7fQoJLnN0MXtmaWxsOiNGMjUwMjI7fQoJLnN0MntmaWxsOiM3RkJBMDA7fQoJLnN0M3tmaWxsOiMwMEE0RUY7fQoJLnN0NHtmaWxsOiNGRkI5MDA7fQo8L3N0eWxlPgo8Zz4KCTxwYXRoIGNsYXNzPSJzdDAiIGQ9Ik0xNDAuMywxNC40djQzLjJoLTcuNVYyMy43aC0wLjFsLTEzLjQsMzMuOWgtNWwtMTMuNy0zMy45aC0wLjF2MzMuOWgtNi45VjE0LjRoMTAuOGwxMi40LDMyaDAuMmwxMy4xLTMyCgkJSDE0MC4zeiBNMTQ2LjYsMTcuN2MwLTEuMiwwLjQtMi4yLDEuMy0zYzAuOS0wLjgsMS45LTEuMiwzLjEtMS4yYzEuMywwLDIuNCwwLjQsMy4yLDEuM2MwLjgsMC44LDEuMywxLjgsMS4zLDNzLTAuNCwyLjItMS4zLDMKCQljLTAuOSwwLjgtMS45LDEuMi0zLjIsMS4ycy0yLjMtMC40LTMuMS0xLjJDMTQ3LDE5LjgsMTQ2LjYsMTguOCwxNDYuNiwxNy43eiBNMTU0LjcsMjYuNnYzMWgtNy4zdi0zMQoJCUMxNDcuNCwyNi42LDE1NC43LDI2LjYsMTU0LjcsMjYuNnogTTE3Ni44LDUyLjNjMS4xLDAsMi4zLTAuMywzLjYtMC44czIuNS0xLjIsMy42LTJ2Ni44Yy0xLjIsMC43LTIuNSwxLjItNCwxLjVzLTMuMSwwLjUtNC45LDAuNQoJCWMtNC42LDAtOC4zLTEuNC0xMS4xLTQuM2MtMi45LTIuOS00LjMtNi42LTQuMy0xMWMwLTUsMS41LTkuMSw0LjQtMTIuM2MyLjktMy4yLDctNC44LDEyLjQtNC44YzEuNCwwLDIuNywwLjIsNC4xLDAuNQoJCWMxLjQsMC40LDIuNSwwLjgsMy4zLDEuMnY3Yy0xLjEtMC44LTIuMy0xLjUtMy40LTEuOWMtMS4yLTAuNS0yLjQtMC43LTMuNi0wLjdjLTIuOSwwLTUuMiwwLjktNywyLjhzLTIuNyw0LjQtMi43LDcuNgoJCWMwLDMuMSwwLjgsNS42LDIuNSw3LjNDMTcxLjYsNTEuNCwxNzMuOSw1Mi4zLDE3Ni44LDUyLjN6IE0yMDQuNywyNi4xYzAuNiwwLDEuMSwwLDEuNiwwLjFzMC45LDAuMiwxLjIsMC4zdjcuNAoJCWMtMC40LTAuMy0wLjktMC41LTEuNy0wLjhjLTAuNy0wLjMtMS42LTAuNC0yLjctMC40Yy0xLjgsMC0zLjMsMC44LTQuNSwyLjNzLTEuOSwzLjgtMS45LDd2MTUuNmgtNy4zdi0zMWg3LjN2NC45aDAuMQoJCWMwLjctMS43LDEuNy0zLDMtNEMyMDEuMiwyNi42LDIwMi44LDI2LjEsMjA0LjcsMjYuMXogTTIwNy45LDQyLjZjMC01LjEsMS40LTkuMiw0LjMtMTIuMnM2LjktNC41LDEyLjEtNC41CgkJYzQuOCwwLDguNiwxLjQsMTEuMyw0LjNjMi43LDIuOSw0LjEsNi44LDQuMSwxMS43YzAsNS0xLjQsOS00LjMsMTJjLTIuOSwzLTYuOCw0LjUtMTEuOCw0LjVjLTQuOCwwLTguNi0xLjQtMTEuNC00LjIKCQlDMjA5LjMsNTEuMywyMDcuOSw0Ny40LDIwNy45LDQyLjZ6IE0yMTUuNSw0Mi4zYzAsMy4yLDAuNyw1LjcsMi4yLDcuNGMxLjUsMS43LDMuNiwyLjYsNi4zLDIuNmMyLjcsMCw0LjctMC45LDYuMS0yLjYKCQlzMi4xLTQuMiwyLjEtNy42YzAtMy4zLTAuNy01LjgtMi4yLTcuNWMtMS40LTEuNy0zLjQtMi41LTYtMi41Yy0yLjcsMC00LjcsMC45LTYuMiwyLjdDMjE2LjIsMzYuNSwyMTUuNSwzOSwyMTUuNSw0Mi4zegoJCSBNMjUwLjUsMzQuOGMwLDEsMC4zLDEuOSwxLDIuNXMyLjEsMS4zLDQuNCwyLjJjMi45LDEuMiw1LDIuNSw2LjEsMy45YzEuMiwxLjUsMS44LDMuMiwxLjgsNS4zYzAsMi45LTEuMSw1LjMtMy40LDcKCQljLTIuMiwxLjgtNS4zLDIuNy05LjEsMi43Yy0xLjMsMC0yLjctMC4yLTQuMy0wLjVjLTEuNi0wLjMtMi45LTAuNy00LTEuMnYtNy4yYzEuMywwLjksMi44LDEuNyw0LjMsMi4yczIuOSwwLjgsNC4yLDAuOAoJCWMxLjYsMCwyLjktMC4yLDMuNi0wLjdjMC44LTAuNSwxLjItMS4yLDEuMi0yLjNjMC0xLTAuNC0xLjktMS4yLTIuNWMtMC44LTAuNy0yLjQtMS41LTQuNi0yLjRjLTIuNy0xLjEtNC42LTIuNC01LjctMy44CgkJcy0xLjctMy4yLTEuNy01LjRjMC0yLjgsMS4xLTUuMSwzLjMtNi45YzIuMi0xLjgsNS4xLTIuNyw4LjYtMi43YzEuMSwwLDIuMywwLjEsMy42LDAuNGMxLjMsMC4yLDIuNSwwLjYsMy40LDAuOVYzNAoJCWMtMS0wLjYtMi4xLTEuMi0zLjQtMS43cy0yLjYtMC43LTMuOC0wLjdjLTEuNCwwLTIuNSwwLjMtMy4yLDAuOEMyNTAuOSwzMy4xLDI1MC41LDMzLjgsMjUwLjUsMzQuOHogTTI2Ni45LDQyLjYKCQljMC01LjEsMS40LTkuMiw0LjMtMTIuMnM2LjktNC41LDEyLjEtNC41YzQuOCwwLDguNiwxLjQsMTEuMyw0LjNjMi43LDIuOSw0LjEsNi44LDQuMSwxMS43YzAsNS0xLjQsOS00LjMsMTIKCQljLTIuOSwzLTYuOCw0LjUtMTEuOCw0LjVjLTQuOCwwLTguNi0xLjQtMTEuNC00LjJDMjY4LjQsNTEuMywyNjYuOSw0Ny40LDI2Ni45LDQyLjZ6IE0yNzQuNSw0Mi4zYzAsMy4yLDAuNyw1LjcsMi4yLDcuNAoJCWMxLjUsMS43LDMuNiwyLjYsNi4zLDIuNmMyLjcsMCw0LjctMC45LDYuMS0yLjZzMi4xLTQuMiwyLjEtNy42YzAtMy4zLTAuNy01LjgtMi4yLTcuNWMtMS40LTEuNy0zLjQtMi41LTYtMi41CgkJYy0yLjcsMC00LjcsMC45LTYuMiwyLjdDMjc1LjMsMzYuNSwyNzQuNSwzOSwyNzQuNSw0Mi4zeiBNMzIyLjksMzIuNkgzMTJ2MjVoLTcuNHYtMjVoLTUuMnYtNmg1LjJ2LTQuM2MwLTMuMywxLjEtNS45LDMuMi04CgkJczQuOC0zLjEsOC4xLTMuMWMwLjksMCwxLjcsMCwyLjQsMC4xYzAuNywwLjEsMS4zLDAuMiwxLjgsMC40VjE4Yy0wLjItMC4xLTAuNy0wLjMtMS4zLTAuNWMtMC42LTAuMi0xLjMtMC4zLTIuMS0wLjMKCQljLTEuNSwwLTIuNywwLjUtMy41LDEuNGMtMC44LDEtMS4yLDIuNC0xLjIsNC4ydjMuN2gxMC45di03bDcuMy0yLjJ2OS4yaDcuNHY2aC03LjRWNDdjMCwxLjksMC4zLDMuMywxLDRjMC43LDAuOCwxLjgsMS4yLDMuMywxLjIKCQljMC40LDAsMC45LTAuMSwxLjUtMC4zYzAuNi0wLjIsMS4xLTAuNCwxLjYtMC43djZjLTAuNSwwLjMtMS4yLDAuNS0yLjMsMC43Yy0xLjEsMC4yLTIuMSwwLjMtMy4yLDAuM2MtMy4xLDAtNS40LTAuOC02LjktMi41CgkJYy0xLjUtMS42LTIuMy00LjEtMi4zLTcuNFYzMi42eiIvPgoJPGc+CgkJPHJlY3QgY2xhc3M9InN0MSIgd2lkdGg9IjM0LjIiIGhlaWdodD0iMzQuMiIvPgoJCTxyZWN0IHg9IjM3LjgiIGNsYXNzPSJzdDIiIHdpZHRoPSIzNC4yIiBoZWlnaHQ9IjM0LjIiLz4KCQk8cmVjdCB5PSIzNy44IiBjbGFzcz0ic3QzIiB3aWR0aD0iMzQuMiIgaGVpZ2h0PSIzNC4yIi8+CgkJPHJlY3QgeD0iMzcuOCIgeT0iMzcuOCIgY2xhc3M9InN0NCIgd2lkdGg9IjM0LjIiIGhlaWdodD0iMzQuMiIvPgoJPC9nPgo8L2c+Cjwvc3ZnPgo=" role="presentation" aria-hidden="true" style="height: 1.25rem; margin: 0 1.25rem 0 1.25rem;">
+            <a class="navbar-brand" href="/">LITMUS Predictor</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarResponsive">
+                <ul class="navbar-nav ml-auto">
+                    <li class="nav-item active">
+                        <a class="nav-link" href="/p/predictivev2.html">Predictor</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" style="color:#a1a4a8" href="https://github.com/microsoft/Litmus/blob/main/LICENSE">License</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" style="color:#a1a4a8" href="https://github.com/microsoft/Litmus/blob/main/README.md">About</a>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Page Content -->
+    <div class="container">
+        <div class="row" role="main">
+
+            <!-- Inputs container -->
+            <div class="col-md-5">
+                <div class="panel panel-default" style="margin-top: 10%;">
+                    <div class="panel-body">
+                        <div class="form-group ui-widget form-row" id="formArea">
+                            <label style="margin-left: 1%;" for="model-select">What is the pretrained model you are using for your task? &nbsp;<span class="tooltipIcon fa fa-info-circle" data-placement='right' data-toggle="tooltip" title="Please specify the pretrained multilingual model (e.g. mBERT, XLM-R) that you have finetuned on. This is used to select model-specific features for learning the predictor."></span></label>
+                            <select style="margin-left: 1%;" class="form-control" id="model-select">
+                                <option value="xlmr">XLM-R</option>
+                                <option value="mbert">mBERT</option>
+                            </select>
+                            <br>
+
+                            <label style="margin-left: 1%;margin-top: 5%;" for="existing-select">What is the nature of your task? &nbsp;<span class="tooltipIcon fa fa-info-circle" data-placement='right' data-toggle="tooltip" title="Please choose from existing tasks (e.g. XNLI, WikiANN, UDPOS) for which predictors have already been trained. Alternatively, please choose Custom if your task is different and you have custom task-model observations for training the predictor."></span></label>
+                            <select style="margin-left: 1%;" class="form-control" id="existing-select">
+                                <option value="data_xlmr_udpos">Sequence Tagging (XLM-R + UDPOS)</option>
+                                <option value="data_xlmr_wikiann">Sequence Tagging (XLM-R + WikiAnn)</option>
+                                <option value="data_xlmr_xnli">Classification (XLM-R + XNLI)</option>
+                                <option value="custom">Custom</option>
+                            </select>
+                            <br>
+
+                            <div id="train-data-info" style="margin-left: 1%; margin-top: 5%; display: none">
+                                <label for="train-data">Upload file with your observations: &nbsp;<span class="tooltipIcon fa fa-info-circle" data-placement='right' data-toggle="tooltip" title='In case of custom tasks, a file with task-model observations needs to be uploaded for training the predictive model. The file should contain one observation per line and each line should have format: "pvt1,pvt2,..", "size1,size2,…",tgt,tgtPerf'></span></label>
+                                <input type="file" class="form-control-file" id="train-data">
+                                <small class="form-text text-muted">
+                                    CSV containing tuples of form: <br> <i>[, pivotLang],[, trainingSize],targetLang,metricValue</i>
+                                </small>
+                            </div>
+
+                            <span style="margin-left: 1%; margin-top: 5%;" class="caption">
+                                <label for="edit-training-data">
+                                    Selected Fine-Tuning Configurations: &nbsp;
+                                    <span class="tooltipIcon fa fa-info-circle" data-placement='right' data-toggle="tooltip" title='Configuration is a set of languages and corresponding amounts of fine-tuning data using which a task-model can be trained. Multiple configurations can be added using the + button to compare the results at the same time.'></span>
+                                </label>
+                                &nbsp;&nbsp;
+                                <button title="Add Configuration" class="btn btn-sm btn-info" id="edit-training-data"><i class="fa fa-plus" aria-hidden="true"></i></button>
+                            </span>
+                            <!-- Modal -->
+                            <div class="modal fade col-md-5" id="training_data_modal" tabindex="-1" aria-labelledby="selectFinetuningConfigurationsModalLabel" aria-hidden="true">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title">Add fine-tuning data</h5>
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                <span aria-hidden="true">&times;</span>
+                                            </button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <div class="form-group ui-widget form-row" id="formArea5">
+
+                                                Steps:
+                                                <ol>
+                                                    <li>Select training language from the drop-down.</li>
+                                                    <li>Configure the amount of labelled data in it using the slider.</li>
+                                                    <li>Click "<i>Add</i>" to save the current training language to the "<i>Current Configuration</i>".</li>
+                                                    <li>Repeat for each training language in current configuration.</li>
+                                                    <li>Click "<i>Save</i>" to save the current training configuration.</li>
+                                                </ol>
+
+                                                <div class="form-group col-3" style="margin-top: 5%;">
+                                                    <select id="validStrings" class="form-control form-control-sm" aria-describedby="validLanguagesHelp" aria-label="selectValidLanguages"></select>
+                                                    <small id="validStringsHelp" class="form-text text-muted">Language for which you have data (pivots)</small>
+                                                </div>
+
+                                                <div class="form-group col-7" style="margin-top: 7%;">
+                                                    <input id="validInp" type="range" class="form-control-range" value="1" step="1" aria-describedby="validDataSizes" aria-label="selectDataSizes">
+                                                    <small id="validInpLabel" class="form-text text-muted" style="margin-top: 4%">Task data size for pivot languages: 100</small>
+                                                </div>
+                                                <button id="addRowToSelected" type="button" style="margin-top: 5%;background-color:#006ee5" class="btn btn-primary btn-sm col-2 align-self-start">Add</button>
+
+                                                <br><br>
+
+                                                <small id="selectedValidStringsLabel" class="col-12">Current Configuration:</small>
+                                                <div class="form-group col-12">
+                                                    <input type="text" id="selectedValidStrings" class="form-control form-control-sm" aria-label="currentConfiguration" placeholder="" disabled>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button id="saveSelectedRow" type="button" style="background-color:#006ee5" class="btn btn-primary btn-sm col-2 align-self-start" data-dismiss="modal">Save</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <br><br>
+                            <div class="w-100">
+                                <div id="emptyConfigPlaceholder">&nbsp;&nbsp;&nbsp;&nbsp;<i>No configurations selected.</i></div>
+                            </div>
+
+                            <small id="selectedRowsLabel" class="col-12"></small>
+                            <br>
+                        </div>
+
+
+
+                        <label for="scoped-targets">Target Languages: &nbsp;<span class="tooltipIcon fa fa-info-circle" data-placement='right' data-toggle="tooltip" title="Please specify the list of target languages for which you want to predict performance. Data-collection strategies, if desired, will be constructed to optimize the performance in these targets."></span></label>
+                        <input class="form-control" type="text" name="scoped-targets" id="scoped-targets">
+                        <small class="form-text text-muted">
+                            Comma-separated list (ex: en,hi,ta)
+                        </small>
+                        <br>
+
+
+                        <label for="if_suggestions">Do you want data collection strategies for your model?</label>
+                        <input type="checkbox" data-related-item="if_suggestions" name="if_suggestions" id="if_suggestions">
+
+                        <div id="suggestions_inp">
+                            <hr />
+                            <label for="edit-budget">Edit budget parameters <button title="Edit" class="btn" id="edit-budget"><i class="fa fa-edit" aria-hidden="true"></i></button> </label>
+                            <!-- Modal -->
+                            <div class="modal fade col-md-5" id="budget_modal" tabindex="-1" aria-labelledby="BudgetSettingsModalLabel" aria-hidden="true">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="exampleModalLabel">Budget settings</h5>
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                <span aria-hidden="true">&times;</span>
+                                            </button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <div class="form-group ui-widget form-row" id="formArea2">
+                                                <label for="scoped-augmentable">Languages for which you can label additional training examples: &nbsp;<span class="tooltipIcon fa fa-info-circle" data-placement='right' data-toggle="tooltip" title="Please specify the list of languages where you can collect additional data samples for your task model. By default, this is the same as the set of desired targets. This field supports upto 20 languages "></span></label>
+                                                <input class="form-control" type="text" name="scoped-augmentable" id="scoped-augmentable" placeholder="Same as target languages if empty" maxlength="59">
+                                                <small class="form-text text-muted">
+                                                    Comma-separated list (ex: en,hi,ta)
+                                                </small>
+                                                <br><br>
+
+                                                <label for="scoped-budget">Total no. of additional instances that you can label for the selected target languages: </label>
+                                                <input class="form-control" type="text" name="scoped-budget" id="scoped-budget" value="10000">
+                                                <br>
+                                                <br><br>
+
+                                                <label for="lang-specific-budget">Language-specific budgets: &nbsp;<span class="tooltipIcon fa fa-info-circle" data-placement='right' data-toggle="tooltip" title="In case there is a limit to the additional data that can be collected in some languages, please specify the language-specific limits here."></span></label>
+                                                <input class="form-control" type="text" name="lang-specific-budget" id="lang-specific-budget">
+                                                <small class="form-text text-muted">
+                                                    Comma-separated list of key:value pairs (Ex en:5000,fr:2000)
+                                                </small>
+                                                <br><br>
+
+                                                <label for="scoped-pivots-row">Which config do you want to see data-collection strategies for: &nbsp;<span class="tooltipIcon fa fa-info-circle" data-placement='right' data-toggle="tooltip" title="While predicting for multiple train-configurations, we propose a data-collection strategy for performance improvement. By default, the best from the multiple train-configurations is used at the starting point. Use this parameter to override which train-configuration to use as the starting point."></span> </label>
+
+                                                <select class="custom-select" id="scoped-pivots-row">
+                                                    <option value="" selected>Best of selected configs</option>
+                                                </select>
+
+                                                <br>
+                                            </div>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" id="save-budget" style="background-color:#006ee5" class="btn btn-primary" data-dismiss="modal">Save Changes</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <br>
+                            <label for="edit-obj">Edit objective functions  <button title="Edit" class="btn" id="edit-obj"><i class="fa fa-edit" aria-hidden="true"></i></button> </label>
+                            <!-- Modal -->
+                            <div class="modal fade col-md-5" id="objective_modal" tabindex="-1" aria-labelledby="ObjectiveFunctionsModalLabel" aria-hidden="true">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="exampleModalLabel2">Objective function settings</h5>
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                <span aria-hidden="true">&times;</span>
+                                            </button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <div class="form-group ui-widget" id="formArea3">
+
+                                                <label class="radio-control-label">What do you want to maximize? &nbsp;<span class="tooltipIcon fa fa-info-circle" data-placement='right' data-toggle="tooltip" title="Please choose the desired objective for building data-collection strategies. Average will maximize the weighted average performance in selected targets whereas Minimum will try to maximize the lowest performance across selected targets."></span> &nbsp;</label>
+
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="radio" name="objective-function" id="radio1" value="avg" checked>
+                                                    <label class="form-check-label" for="radio1">
+                                                        Weighted Average
+                                                    </label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="radio" name="objective-function" id="radio2" value="min">
+                                                    <label class="form-check-label" for="radio2">
+                                                        Minimum
+                                                    </label>
+                                                </div>
+                                                <br>
+
+                                                <label for="suggestions_weights">Target weights for weighted average objective: &nbsp;<span class="tooltipIcon fa fa-info-circle" data-placement='right' data-toggle="tooltip" title="In case you want to maximize the average performance, optionally specify weights for the different targets. By default, all unspecified target weights are 1. "></span></label>
+                                                <input class="form-control" type="text" name="suggestions_weights" id="suggestions_weights">
+                                                <small class="form-text text-muted">
+                                                    Comma-separated list of key:value pairs (ex: en:2,fr:3)
+                                                </small>
+                                            </div>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-primary" style="background-color:#006ee5" data-dismiss="modal">Save Changes</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <br>
+                            <label for="edit-perf">Edit performance constraints <button title="Edit" class="btn" id="edit-perf"><i class="fa fa-edit" aria-hidden="true"></i></button> </label>
+                            <!-- Modal -->
+                            <div class="modal fade col-md-5" id="performance_modal" tabindex="-1" aria-labelledby="PerformanceSettingsModalLabel" aria-hidden="true">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="exampleModalLabel3">Performance constraint settings</h5>
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                <span aria-hidden="true">&times;</span>
+                                            </button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <div class="form-group ui-widget form-row" id="formArea4">
+                                                <label for="suggestions_minperf">Minimum acceptable average performance across tgts: &nbsp;<span class="tooltipIcon fa fa-info-circle" data-placement='right' data-toggle="tooltip" title="The data-collection strategy can be constrained to enforce a minimum performance in the desired objective. However, in such cases it is possible that we are unable to find any solution."></span></label>
+                                                <input class="form-control" type="text" name="suggestions_minperf" id="suggestions_minperf">
+                                                <br><br>
+
+                                                <label for="suggestions_minlangperf">Minimum acceptable performance per target language: &nbsp;<span class="tooltipIcon fa fa-info-circle" data-placement='right' data-toggle="tooltip" title="The data-collection strategy can be constrained to enforce a language-specific minimum performance in the desired objective. However, in such cases it is possible that we are unable to find any solution."></span></label>
+                                                <input class="form-control" type="text" name="suggestions_minlangperf" id="suggestions_minlangperf">
+                                                <small class="form-text text-muted">
+                                                    Comma-separated list of key:value pairs (Ex en:0.5,fr:0.7)
+                                                </small>
+                                                <br>
+                                            </div>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" id="save-perf" class="btn btn-primary" style="background-color:#006ee5" data-dismiss="modal">Save Changes</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <hr />
+                        </div>
+                        <br><br>
+                        <button class="btn btn-primary" id="submit" style="background-color:#006ee5">Submit</button>
+                        <br><br>
+                    </div>
+                </div>
+            </div>
+
+
+            <!-- Outputs Container -->
+            <div class="col-md-6 offset-md-1">
+                <div id="error_div" style="margin-top: 10%;display: none;" tabindex="0">
+                </div>
+                <div id="output_div" style="margin-top: 10%; display: none" >
+                    <h6 id="reg_errors" tabindex="0"></h6>
+                    <p><small id="avg_perf"></small></p>
+
+                    <div id="heatmap_view" style="display: none;">
+                        <h6 tabindex="0">
+                            Predicted Performance in selected targets: &nbsp;<span class='tooltipIcon fa fa-info-circle' data-placement='right' data-toggle='tooltip' title='Shows predicted average performance in selected targets in yellow. Green bars represent higher than average performance among the targets and red lower than average.'></span>
+                            <br><small><i>(reported for best configuration = Config-<span id="best_row_idx"></span>)</i></small>
+                        </h6>
+                        <p>
+                            <div id="chartContainer" tabindex="0"></div>
+                            <small tabindex="0"><i>*For predicted perf. on remaining targets, download all results from below.</i></small>
+                        </p>
+                        <br>
+
+                        <h6 tabindex="0">Target-Performance Heatmap for different configurations:</h6>
+                        <img src="#" alt="Target Performance Heatmap" id="heatmap" style="width:90%; display: none; margin: auto;" tabindex="0">
+                        <br>
+                    </div>
+
+                    <div id="suggestions_table" class="table" style="display: none;" >
+                        <h6 tabindex="0" id="chart_title">
+                            Data-collection plan: &nbsp;<span class='tooltipIcon fa fa-info-circle' data-placement='right' data-toggle='tooltip' title='Suggested to collect data in different languages in the following proportions. Some budget can be left unused in case the tool is unable to beneficially allocate it for maximizing the objective.'></span>
+                            <br><small><i>(reported for configuration = Config-<span id="suggestions_idx"></span>)</i></small>
+                        </h6>
+                        <br>
+                        <div id="suggestionsChart" tabindex="0"></div>
+                        <br>
+                        <h6 id="diff_accuracy" tabindex="0"></h6>
+                    </div>
+                    <br>
+                    <button class="btn btn-secondary" id="download">Download all</button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Bootstrap core JavaScript -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ho+j7jyWK8fNQe+A12Hb8AhRq26LrZ/JpcUGGOn+Y7RsweNrtN/tE3MoK7ZeZDyx" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
+    <script src="/js/common.js"></script>
+    <script src="/js/predictive.js"></script>
+
+
+</body>
+
+</html>
