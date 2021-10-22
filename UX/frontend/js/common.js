@@ -7,8 +7,10 @@ $(function () {
 		/*
 		 * Choose API endpoint based on environment
 		 */
-		/*
-		 * Safely encapsulates API calls and handling
+
+		API_CODE: "Fn21WRKB0yuxmkRA68YTvpwXH2uu5dWIV1X/aVkdkOJCB8Ly/waauA==",
+
+		 /* Safely encapsulates API calls and handling
 		 * (Using function closures for maintaining state)
 		 */
 		getSafeSubmitHandler: function(realHandler, submitId){
@@ -47,6 +49,7 @@ $(function () {
 		ajaxPostRequest: function (args) {
 			// Add your API code here args.params.code
 			window.last_api_req = null;
+			args.params.code = this.API_CODE;
 
 			// Build XHR request
 			var oReq = new XMLHttpRequest();
