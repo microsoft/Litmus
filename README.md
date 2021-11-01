@@ -1,5 +1,10 @@
 # LITMUS Predictor
 
+[![license](https://img.shields.io/badge/Demo-youtu.be/20dR8oKc9j0-critical?style=&logo=youtube)](https://www.youtube.com/watch?v=20dR8oKc9j0)
+[![license](https://img.shields.io/badge/Predictor-microsoft.github.io/Litmus-informational?style=&logo=microsoft-azure)](https://microsoft.github.io/Litmus/)
+[![license](https://img.shields.io/badge/LITMUS-microsoft.com/research/project--litmus-green?style=&logo=microsoft)](https://www.microsoft.com/en-us/research/project/project-litmus/)
+
+
 LITMUS Predictor provides support for simulating performance in ~100 languages given training observations of the desired task-model. Each training observation specifies the finetuning-datasize + test-performance in different languages.
 
 Further, the tool provides support for constructing a data-collection strategy to maximize performance in desired targets subject to different constraints.
