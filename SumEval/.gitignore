@@ -1,7 +1,10 @@
+Baselines/*
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
 *$py.class
+
 
 # C extensions
 *.so
@@ -138,3 +141,10 @@ dmypy.json
 # Cython debug symbols
 cython_debug/
 
+# PyCharm/vim files
+.idea
+*.swp
+
+src/averaging_baseline.py
+Baselines/combined_preds/*.json
+data/combined_gold/*.json
