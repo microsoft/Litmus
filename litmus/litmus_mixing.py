@@ -22,7 +22,7 @@ import sklearn.linear_model
 import sklearn.pipeline
 import sklearn.preprocessing
 import sklearn.neural_network
-
+import pdb
 
 # Stopgap to enable use as module & standalone script
 if __name__ == "__main__":
@@ -173,7 +173,7 @@ def prepare_data(args):
 
             X_array.append(featurizer.featurize(list(eval_results.keys()), list(train_config.keys()), list(train_config.values())))
             Y_array.append(list(eval_results.values()))
-            examples.extend([[train_config, t] for t in eval_results.values()])
+            examples.extend([[train_config, t, l] for l,t in eval_results.items()])
 
         langs_pivot = list(train_config.keys())
         langs_target = list(eval_results.keys())
@@ -243,7 +243,7 @@ def prepare_inf_data(args, langs_list):
     return data_sizes, tgt_langs
 
 
-def train_model(X, Y, feat_names, common_feats, langs_pivot, langs_target, args):
+def train_model(X, Y, feat_names, common_feats, langs_pivot, langs_target, examples, args):
 
     error_method = args.error_method
     bprint = args.print
@@ -326,19 +326,73 @@ def train_model(X, Y, feat_names, common_feats, langs_pivot, langs_target, args)
 
             error = abs((Y_gold - Y_pred))
             errors.append(error)
-            baseline_errors.extend(abs(np.mean(Y_reg) - Y_gold))
+            baseline_errors.append(abs(np.mean(Y_reg) - Y_gold))
+
+    elif error_method == "LOCO":
+        #Leave one configuration out scenario
+        errors = []
+        predictions = []
+        examples_indices = []
+        baseline_errors = []
+        num_tgts = len(langs_target)
+        for i in tqdm(range(0, len(examples), num_tgts)):
+            test_index = (list(range(i, i + num_tgts)))
+            train_index = (
+                list(range(i)) + list(range(i + num_tgts, len(examples)))
+            )
+            X_train, X_test = X[train_index], X[test_index]
+            Y_train, Y_test = Y[train_index], Y[test_index]
+            res1 = train_function(X_train, Y_train, common_feats, args.training_algorithm, args.load_model, args.model)
+            Y_pred = res1.predict(X_test)
+            error = abs((Y_pred - Y_test))
+            errors.extend(error)
+            examples_indices.extend(test_index)
+            predictions.extend(Y_pred)
+            baseline_errors.extend(abs(np.mean(Y_train) - Y_test))
+
+
+    elif error_method == "LOLO":
+        #Leave one language out scenario, remove all instances of a language (in train_config as well as results) and move to test.
+        errors = []
+        predictions = []
+        examples_indices = []
+        baseline_errors = []
+        for lang in tqdm(langs_target):
+            train_index, test_index = [], []
+            for i,example in enumerate(examples):
+                # If language is present neither as a pivot or target                
+                if lang != example[-1] and example[0][lang] == 0:
+                    train_index.append(i)
+
+                # If language is present as a target put it in test
+                elif lang == example[-1]:
+                    test_index.append(i)
+
+            X_train, X_test = X[train_index], X[test_index]
+            Y_train, Y_test = Y[train_index], Y[test_index]
+            res1 = train_function(X_train, Y_train, common_feats, args.training_algorithm, args.load_model, args.model)
+            Y_pred = res1.predict(X_test)
+            error = abs((Y_pred - Y_test))
+            errors.extend(error)
+            examples_indices.extend(test_index)
+            predictions.extend(Y_pred)
+            baseline_errors.extend(abs(np.mean(Y_train) - Y_test))
 
     avg_error, std_error = np.mean(errors), np.std(errors)
-    baseline_error = np.mean(baseline_errors)
+    baseline_error, baseline_std_error = np.mean(baseline_errors), np.std(baseline_errors)
     if bprint:
         print("Avg Pred Error: {0:0.6f}".format(avg_error))
         print("Std Pred Error: {0:0.6f}".format(std_error))
+
+        print("Baseline Error: {0:0.6f}".format(baseline_error))
+        print("Std Baseline Error: {0:0.6f}".format(baseline_std_error))
+
 
     if args.save_model:
         with open(args.save_model, 'wb') as f:
             pickle.dump(model, f)
 
-    return model, (avg_error, std_error), baseline_error, errors, examples_indices, predictions
+    return model, (avg_error, std_error), (baseline_error,baseline_std_error), errors, examples_indices, predictions
 
 
 def build_acc_matrix(langs_pivot, langs_target, featurizer, model, data_sizes):
@@ -554,11 +608,15 @@ def get_user_config_perfs(model, featurizer, langs_list, targets, data_sizes):
     # Add tgt-score-distrib for best performing user-specified config
     best_user_config, best_user_config_idx, _ = max([(user_config, row_idx, AvgPerf(user_config)) for row_idx, user_config in enumerate(data_sizes.tolist())], key= lambda x: x[2])
     best_user_config_perfs = TgtPerfs(best_user_config)
+    tgt_perfs = [
+        TgtPerfs(user_config) for row_idx, user_config in enumerate(data_sizes.tolist())
+    ]
 
     return {
         "best-config-idx": best_user_config_idx,
         "best-config": SimpleAugSet(best_user_config),
-        "best-tgt-perfs": list(zip(langs_tgts, best_user_config_perfs))
+        "best-tgt-perfs": list(zip(langs_tgts, best_user_config_perfs)),
+        "tgt_perfs" : tgt_perfs
     }
 
 
@@ -599,9 +657,8 @@ def litmus_main(args):
     else:
         # Prepare data
         model, langs_list, feat_names, featurizer, common_feats, X, Y, langs_pivot, langs_target, examples = prepare_data(args)
-
         # Train prediction model
-        model, (avg_error, std_error), baseline_error, errors, examples_indices, predictions = train_model(X, Y, feat_names, common_feats, langs_pivot, langs_target, args)
+        model, (avg_error, std_error), (baseline_error, baseline_std), errors, examples_indices, predictions = train_model(X, Y, feat_names, common_feats, langs_pivot, langs_target, examples, args)
 
 
     if args.save_state:
@@ -611,9 +668,11 @@ def litmus_main(args):
 
     ret_val = {
         "error": avg_error,  # Average Error Computed by specified Method
+        "std_error" : std_error, # Standard Deviation of Predictor's Error
         "langs_pivot": langs_pivot,  # Pivot Languages
         "langs_target": langs_target,  # Target Languages
         "baseline_error": baseline_error,  # Error when using Mean Baseline Method instead of training model
+        "baseline_std_error" : baseline_std, # Std of Error of mean baseline
     }
 
 
@@ -655,6 +714,8 @@ def litmus_main(args):
             ret_val["suggestions"]["suggestions_row"] = pivot_row_idx
             pprint (ret_val["suggestions"])
 
+    
+
     return ret_val
 
 
@@ -667,7 +728,7 @@ def parse_args(args):
     parser.add_argument("--train_format", default="json", help="Format of the training data", choices=["json", "csv"])
     parser.add_argument("--save_state", default=None, type=str, help="Save state of training of model to pickle file")
     parser.add_argument("--load_state", default=None, type=str, help="Load trained model from pickle file")
-    
+    parser.add_argument("--test_file", default=None, type=str, help="Test file to generate prediction. If `None` then no predictions are made")
     # Feature options
     parser.add_argument("--precomputed_features", type=str, default=PRECOMPUTED_FEATURE_FILE, help="Path to precomputed-features file.")
     parser.add_argument("--pivot_features", type=str, default="none", choices=["none", "all", "data_only"], help="What features based on pivot langs to use")
@@ -676,7 +737,7 @@ def parse_args(args):
     
     # Model training options
     parser.add_argument("--training_algorithm", type=str, default="xgboost", help="which regressor to use", choices=["xgboost", "mlp"])
-    parser.add_argument("--error_method", type=str, default="split", choices=["LOO", "LOTO", "split", "kfold", "manual_split"])
+    parser.add_argument("--error_method", type=str, default="split", choices=["LOO", "LOTO", "LOLO", "LOCO", "split", "kfold", "manual_split"])
     parser.add_argument("--dont_print", action="store_false", dest="print", help="disable any form of printing")
 
     # Experimental Options
