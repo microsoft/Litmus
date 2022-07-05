@@ -1,7 +1,7 @@
 """
 	Tool supported config
 """
-SUPPORTED_MODELS = ['mbert', 'xlmr']
+SUPPORTED_MODELS = ['mbert', 'xlmr', 'tulrv6']
 SUPPORTED_TRAIN_ALGOS_V2 = ['xgboost']
 SUPPORTED_MODES = ["interactive", "heatmap", "suggestions"]
 SUPPORTED_DATA_FORMATS = ["matrix", "decomposed"]
@@ -11,7 +11,8 @@ SUPPORTED_DATA_FORMATS = ["matrix", "decomposed"]
 """
 mbert_language_iso_codes = ['af', 'sq', 'ar', 'hy', 'ast', 'az', 'ba', 'eu', 'bar', 'be', 'bn', 'bs', 'br', 'bg', 'my', 'ca', 'ceb', 'ce', 'zh', 'cv', 'cs', 'da', 'nl', 'en', 'et', 'fi', 'fr', 'gl', 'ka', 'de', 'el', 'gu', 'ht', 'he', 'hi', 'hu', 'is', 'id', 'ga', 'it', 'ja', 'jv', 'kn', 'kk', 'ky', 'ko', 'lv', 'lt', 'nds', 'lb', 'mk', 'mg', 'ms', 'ml', 'mr', 'min', 'ne', 'new', 'no', 'oc', 'fa', 'pms', 'pl', 'pt', 'pa', 'ro', 'ru', 'sk', 'sl', 'es', 'su', 'sw', 'sv', 'tl', 'tg', 'ta', 'tt', 'te', 'tr', 'uk', 'ur', 'uz', 'vi', 'war', 'cy', 'fy', 'yo', 'th']
 xlmr_language_codes = ['af', 'am', 'ar', 'as', 'az', 'be', 'bg', 'bn', 'br', 'bs', 'ca', 'cs', 'cy', 'da', 'de', 'el', 'en', 'es', 'et', 'eu', 'fa', 'fi', 'fr', 'fy', 'ga', 'gd', 'gl', 'gu', 'ha', 'he', 'hi', 'hu', 'hy', 'id', 'is', 'it', 'ja', 'jv', 'ka', 'kk', 'km', 'kn', 'ko', 'ku', 'ky', 'lo', 'lt', 'lv', 'mg', 'mk', 'ml', 'mr', 'ms', 'my', 'ne', 'nl', 'no', 'om', 'or', 'pa', 'pl', 'ps', 'pt', 'ro', 'ru', 'sd', 'si', 'sk', 'sl', 'so', 'sq', 'su', 'sv', 'sw', 'ta', 'te', 'th', 'tl', 'tr', 'ug', 'uk', 'ur', 'uz', 'vi', 'xh', 'yi', 'zh']
-MODEL2LANGS = {'mbert': mbert_language_iso_codes, 'xlmr': xlmr_language_codes}
+tulrv6_language_codes = ["af", "am", "ar", "as", "az", "ba", "be", "bg", "bn", "ca", "ckb", "cs", "cy", "da", "de", "el", "en", "es", "et", "eu", "fa", "fi", "fr", "ga", "gl", "gu", "he", "hi", "hr", "hu", "hy", "id", "is", "it", "ja", "ka", "kk", "km", "kn", "ko", "ky", "la", "lo", "lt", "lv", "mk", "ml", "mr", "ms", "mt", "my", "ne", "nl", "nn", "no", "or", "pa", "pl", "ps", "pt", "ro", "ru", "sd", "si", "sk", "sl", "sq", "sr", "sv", "sw", "ta", "te", "tg", "th", "tl", "tr", "tt", "ug", "uk", "ur", "uz", "vi", "yi", "zh"]
+MODEL2LANGS = {'mbert': mbert_language_iso_codes, 'xlmr': xlmr_language_codes, 'tulrv6': tulrv6_language_codes}
 
 """
 	Families grouped by languages
