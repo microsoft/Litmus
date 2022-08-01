@@ -5,7 +5,7 @@ Helper Code and Datasets for the 1st Workshop on Scaling Up Multilingual Evaluat
 ## Submission Instructions
 The test files are located in [`data/test_release/`](data/test_release/), and contain (1) the training configurations and (2) the languages for which the predictions are to be made.
 
-We have three types of test files (in most cases) for every dataset-model pair which are:
+We have three types of test files (in most cases) for every dataset-model pair:
 - Test sets containing new configurations but same languages as seen in the training data. These are often denoted without any suffix, for eg: [`data/test_release/XNLI_XLMR.json`](data/test_release/XNLI_XLMR.json)
 - Test sets containing new languages aka surprise languages but same configurations as the ones seen during training. These are denoted by the suffix '_surprise_langs_same_configs', for eg: [`data/test_release/XNLI_XLMR_surprise_langs_same_configs.json`](data/test_release/XNLI_XLMR_surprise_langs_same_configs.json)
 - Test sets containing surprise languages as well as new configurations. These are denoted by the suffix '_surprise_langs_diff_configs', for eg: [`data/test_release/XNLI_XLMR_surprise_langs_diff_configs.json`](data/test_release/XNLI_XLMR_surprise_langs_diff_configs.json)
