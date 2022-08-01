@@ -3,7 +3,7 @@
 Helper Code and Datasets for the 1st Workshop on Scaling Up Multilingual Evaluation (SUMEval).
 
 ## Submission Instructions
-The test files containing the training configurations and languages for which the predictions are to be made are located in [`data/test_release/`](data/test_release/)
+The test files are located in [`data/test_release/`](data/test_release/), and contain (1) the training configurations and (2) the languages for which the predictions are to be made.
 
 We have three types of test files (in most cases) for every dataset-model pair which are:
 - Test sets containing new configurations but same languages as seen in the training data. These are often denoted without any suffix, for eg: [`data/test_release/XNLI_XLMR.json`](data/test_release/XNLI_XLMR.json)
