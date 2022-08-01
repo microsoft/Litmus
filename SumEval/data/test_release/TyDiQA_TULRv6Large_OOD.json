@@ -1,0 +1,80 @@
+[
+    {
+        "train_config": {
+            "ar": 14805,
+            "bn": 0,
+            "en": 0,
+            "fi": 0,
+            "id": 0,
+            "ko": 1625,
+            "ru": 0,
+            "sw": 10,
+            "te": 0
+        },
+        "eval_results": {
+            "ar": "x",
+            "de": "x",
+            "el": "x",
+            "en": "x",
+            "es": "x",
+            "hi": "x",
+            "ro": "x",
+            "ru": "x",
+            "th": "x",
+            "tr": "x",
+            "vi": "x"
+        }
+    },
+    {
+        "train_config": {
+            "ar": 14805,
+            "bn": 0,
+            "en": 10,
+            "fi": 1000,
+            "id": 0,
+            "ko": 1625,
+            "ru": 0,
+            "sw": 2755,
+            "te": 100
+        },
+        "eval_results": {
+            "ar": "x",
+            "de": "x",
+            "el": "x",
+            "en": "x",
+            "es": "x",
+            "hi": "x",
+            "ro": "x",
+            "ru": "x",
+            "th": "x",
+            "tr": "x",
+            "vi": "x"
+        }
+    },
+    {
+        "train_config": {
+            "ar": 14805,
+            "bn": 2390,
+            "en": 10,
+            "fi": 0,
+            "id": 0,
+            "ko": 1000,
+            "ru": 100,
+            "sw": 0,
+            "te": 10
+        },
+        "eval_results": {
+            "ar": "x",
+            "de": "x",
+            "el": "x",
+            "en": "x",
+            "es": "x",
+            "hi": "x",
+            "ro": "x",
+            "ru": "x",
+            "th": "x",
+            "tr": "x",
+            "vi": "x"
+        }
+    }
+]
