@@ -27,14 +27,14 @@ filenames = {
         "XNLI_TULRv6Large_surprise_langs_same_configs.json",
         "XNLI_XLMR_surprise_langs_diff_configs.json",
         "XNLI_XLMR_surprise_langs_same_configs.json",
-    ]
+    ],
 }
 
 
 def parse_to_combined_json(
     json_dir: str,
     input_filename: str,
-    value_name: str = 'predicted_value',
+    value_name: str = "predicted_value",
 ) -> Iterable[dict[str, float | str]]:
     """
     Parse the original file to a combined json format.
@@ -68,7 +68,9 @@ def parse_to_combined_json(
                 raise ValueError(f"Missing train_config or eval_results in {config}")
             features["data_setting"] = f'{features["overall_setting"]}_{config_id}'
             for language, value in config["eval_results"].items():
-                features["target_lang_data_size"] = config["train_config"].get(language, 0)
+                features["target_lang_data_size"] = config["train_config"].get(
+                    language, 0
+                )
                 features["target_lang"] = language
                 try:
                     value = float(value)
@@ -87,7 +89,7 @@ def verify_template(split_name: str, pred_data: list[dict], template_dir: str) -
         - pred_data: The parsed data from the prediction
         - template_dir: The directory that the template files are in
     """
-    with open(os.path.join(template_dir, f'{split_name}.json'), "r") as template_handle:
+    with open(os.path.join(template_dir, f"{split_name}.json"), "r") as template_handle:
         template_data = json.load(template_handle)
         if len(template_data) != len(pred_data):
             raise ValueError(
@@ -104,6 +106,8 @@ def verify_template(split_name: str, pred_data: list[dict], template_dir: str) -
 
 
 def main():
+    global filenames
+
     parser = argparse.ArgumentParser(
         "Consolidates separate JSON files into a single one for upload"
     )
@@ -132,14 +136,27 @@ def main():
         type=str,
         help="The name of the value field in the output json",
     )
+    parser.add_argument(
+        "--split",
+        default="all",
+        type=str,
+        choices=["sumeval_test", "sumeval_surprise", "all"],
+        help="Test split for which to combine predictions",
+    )
     args = parser.parse_args()
+
+    if args.split != "all":
+        filenames = {args.split: filenames[args.split]}
 
     # Read in the data
     pred_data = {}
     for split, split_files in filenames.items():
         pred_data[split] = list(
             itertools.chain.from_iterable(
-                [parse_to_combined_json(args.pred_dir, x, value_name=args.value_name) for x in split_files]
+                [
+                    parse_to_combined_json(args.pred_dir, x, value_name=args.value_name)
+                    for x in split_files
+                ]
             )
         )
 
@@ -150,12 +167,12 @@ def main():
         # Verify with the template if exists
         if args.template_dir is not None:
             verify_template(split_name, pred_val, args.template_dir)
-        out_path = os.path.join(args.out_dir, f'{split_name}.json')
-        print(f'* Writing {out_path}', file=sys.stderr)
+        out_path = os.path.join(args.out_dir, f"{split_name}.json")
+        print(f"* Writing {out_path}", file=sys.stderr)
         with open(out_path, "w") as out_handle:
-            json.dump({'examples': pred_val}, out_handle)
+            json.dump({"examples": pred_val}, out_handle)
 
-    print(f'Success!', file=sys.stderr)
+    print(f"Success!", file=sys.stderr)
 
 
 if __name__ == "__main__":
