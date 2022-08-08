@@ -3,9 +3,13 @@
 Helper Code and Datasets for the 1st Workshop on Scaling Up Multilingual Evaluation (SUMEval).
 
 ## Submission Instructions
-The test files containing the training configurations and languages for which the predictions are to be made are located in [`data/test_release/`](data/test_release/)
 
-We have three types of test files (in most cases) for every dataset-model pair which are:
+*Note: Currently we are only releasing the "test" split and not the "surprise" split, which shall be made available soon. Hence, the link below for the surprise languages will not work for now, but you can ignore those and make your submissions for the "test" split.*
+
+
+The test files are located in [`data/test_release/`](data/test_release/), and contain (1) the training configurations and (2) the languages for which the predictions are to be made.
+
+We have three types of test files (in most cases) for every dataset-model pair:
 - Test sets containing new configurations but same languages as seen in the training data. These are often denoted without any suffix, for eg: [`data/test_release/XNLI_XLMR.json`](data/test_release/XNLI_XLMR.json)
 - Test sets containing new languages aka surprise languages but same configurations as the ones seen during training. These are denoted by the suffix '_surprise_langs_same_configs', for eg: [`data/test_release/XNLI_XLMR_surprise_langs_same_configs.json`](data/test_release/XNLI_XLMR_surprise_langs_same_configs.json)
 - Test sets containing surprise languages as well as new configurations. These are denoted by the suffix '_surprise_langs_diff_configs', for eg: [`data/test_release/XNLI_XLMR_surprise_langs_diff_configs.json`](data/test_release/XNLI_XLMR_surprise_langs_diff_configs.json)
@@ -38,7 +42,8 @@ All the test files are of the following format:
 We ask the participants to predict the `"x"` values in these files by training predictor models on the training data, and replacing `"x"` with the predicted values in these files. For instance one can generate the predictions using the LITMUS predictor baseline by running:
 
 ```bash
-python -m src.sum_eval_predict --data_dir ./data --out_dir ./Baselines
+python -m src.sum_eval_predict --data_dir ./data --out_dir ./Baselines --model xlmr
+python -m src.sum_eval_predict --data_dir ./data --out_dir ./Baselines --model tulrv6
 ```
 
 This will generate predictions for each file in the `./Baselines/preds` directory.
@@ -46,10 +51,11 @@ This will generate predictions for each file in the `./Baselines/preds` director
 Once the predictions are generated they can be combined together to be compatible with [Explainaboard](https://explainaboard.inspiredco.ai/) by running:
 
 ```bash
-python src/combine_predictions.py --pred_dir Baselines/preds --out_dir Baselines/combined_pred --value_name predicted_value
+python src/combine_predictions.py --pred_dir Baselines/preds --out_dir Baselines/combined_pred --value_name predicted_value --split sumeval_test
+python src/combine_predictions.py --pred_dir Baselines/preds --out_dir Baselines/combined_pred --value_name predicted_value --split sumeval_surprise
 ```
 
-This will generate two files namely `Baselines/combined_pred/sumeval_test.json` and `Baselines/combined_pred/sumeval_surprise.json` which can be uploaded to Explainaboard for evaluation. The former will combine predictions for the test files not involving any surpise languages while the latter as the name suggests involve combining predictions for test data with surprise languages (for both same and diff versions)
+This will generate two files namely `Baselines/combined_pred/sumeval_test.json` and `Baselines/combined_pred/sumeval_surprise.json` which can be uploaded to Explainaboard for evaluation. The former will combine predictions for the test files not involving any surprise languages while the latter as the name suggests involve combining predictions for test data with surprise languages (for both same and diff versions)
 
 ### Explainaboard Submission instructions
 
