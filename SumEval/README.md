@@ -4,7 +4,7 @@ Helper Code and Datasets for the 1st Workshop on Scaling Up Multilingual Evaluat
 
 ## Submission Instructions
 
-*Note: Currently we are only releasing the "test" split and not the "surprise" split, which shall be made available soon. Hence, the link below for the surprise languages will not work for now, but you can ignore those and make your submissions for the "test" split.*
+*Update: "Surprise" split has been released as of 8th August 2022.*
 
 
 The test files are located in [`data/test_release/`](data/test_release/), and contain (1) the training configurations and (2) the languages for which the predictions are to be made.
